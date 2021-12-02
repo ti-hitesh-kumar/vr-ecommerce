@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Panorama</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<link type="text/css" rel="stylesheet" href="./asset/css/main.css">
+
+		<style type="text/css">
+			.styled {
+				border: 0;
+				line-height: 2.5;
+				padding: 0 20px;
+				font-size: 1rem;
+				text-align: center;
+				color: #fff;
+				text-shadow: 1px 1px 1px #000;
+				border-radius: 10px;
+				position: fixed;
+				text-decoration: none;
+				background-color: rgba(220, 0, 0, 1);
+				background-image: linear-gradient(to top left, rgba(0, 0, 0, .2), rgba(0, 0, 0, .2) 30%, rgba(0, 0, 0, 0));
+				box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6), inset -2px -2px 3px rgba(0, 0, 0, .6);
+			}
+
+			.styled:hover {
+				background-color: rgba(255, 0, 0, 1);
+				text-decoration: none;
+			}
+
+			.styled:active {
+				text-decoration: none;
+				box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6), inset 2px 2px 3px rgba(0, 0, 0, .6);
+			}
+		</style>
+
+	</head>
+	<body>
+		<div style="position: relative;">
+
+			<div id="container"></div>
+
+			<a id="annotation-1" class="favorite styled" target="_blank" hidden href="http://google.com">
+				Click
+			</a>
+
+		</div>
+
+		<script type="module">
+
+			import * as THREE from './asset/js/three.module.js';
+
+			import { OrbitControls } from './asset/js/OrbitControls.js';
+
+			import { CSS3DRenderer, CSS3DObject, CSS3DSprite } from './asset/js/CSS3DRenderer.js';
+
+			let camera, controls, object3D, mesh;
+			let renderer, renderer2, button;
+			let scene, scene2, mainMesh;
+
+			let isUserInteracting = false,
+				onPointerDownMouseX = 0, onPointerDownMouseY = 0,
+				lon = 0, onPointerDownLon = 0,
+				lat = 0, onPointerDownLat = 0,
+				phi = 0, theta = 0;
+
+			init();
+			animate();
+
+			function init() {
+
+				const container = document.getElementById( 'container' );
+
+				renderer = new THREE.WebGLRenderer({ antialias: true });
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+
+				scene = new THREE.Scene();
+
+				const light = new THREE.DirectionalLight( 0xffffff, 1 );
+				light.position.set( -6, 1, 1 );
+				scene.add( light );
+
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+				camera.position.z = 200;
+
+				// button = makeElementObject('button', 1, 1);
+				// button.css3dObject.element.textContent = "Click me!";
+				// button.css3dObject.element.style.fontSize = '100px';
+				// button.css3dObject.element.addEventListener('click', () => alert('Button clicked!'));
+				// button.position.x = 6;
+				// button.position.y = 0;
+				// button.position.z = 0;
+
+				// scene.add( button );
+
+				controls = new OrbitControls( camera, renderer.domElement );
+				controls.enableZoom = false;
+
+				loadPanoramaTexture();
+
+				Array(200).fill().forEach(addStar);
+
+				console.log(scene);
+
+				// loadBoxTexture();
+
+				window.addEventListener( 'resize', onWindowResize );
+
+				// window.addEventListener( 'wheel', onDocumentMouseWheel );
+
+				// window.addEventListener( 'pointerdown', onPointerDown );
+
+			}
+
+			function addStar() {
+				const geometry = new THREE.OctahedronGeometry(0.25, 0);
+				const material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF } );
+
+				const star = new THREE.Mesh( geometry, material );
+
+				const [x, y, z] = Array(3).fill().map( () => THREE.MathUtils.randFloatSpread( 100 ) );
+
+				star.position.set( x, y, z );
+				scene.add( star );
+			}
+
+			function loadPanoramaTexture() {
+
+				const geometry = new THREE.SphereGeometry( 500, 60, 40 );
+
+				geometry.scale( - 1, 1, 1 );
+
+				const texture = new THREE.TextureLoader().load( 'asset/images/scifi.jpg' );
+				const material = new THREE.MeshBasicMaterial( { map: texture } );
+
+				mainMesh = new THREE.Mesh( geometry, material );
+
+				scene.add( mainMesh );
+
+			}
+
+			function onPointerDown( event ) {
+
+				if ( event.isPrimary === false ) return;
+
+				isUserInteracting = true;
+
+				onPointerDownMouseX = event.clientX;
+				onPointerDownMouseY = event.clientY;
+
+				onPointerDownLon = lon;
+				onPointerDownLat = lat;
+
+				document.addEventListener( 'pointermove', onPointerMove );
+				document.addEventListener( 'pointerup', onPointerUp );
+
+			}
+
+			function onPointerMove( event ) {
+
+				if ( event.isPrimary === false ) return;
+
+				lon = ( onPointerDownMouseX - event.clientX ) * 0.1 + onPointerDownLon;
+				lat = ( event.clientY - onPointerDownMouseY ) * 0.1 + onPointerDownLat;
+
+			}
+
+			function onPointerUp() {
+
+				if ( event.isPrimary === false ) return;
+
+				isUserInteracting = false;
+
+				document.removeEventListener( 'pointermove', onPointerMove );
+				document.removeEventListener( 'pointerup', onPointerUp );
+
+			}
+
+			function loadBoxTexture() {
+
+				const texture = new THREE.TextureLoader().load( 'asset/images/pyramids-ge70da8bc0_1920.jpg' );
+
+				const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+				geometry.translate(-6, 0, 0);
+				const material = new THREE.MeshBasicMaterial( { map: texture } );
+				mesh = new THREE.Mesh( geometry, material );
+				scene.add( mesh );
+			}
+
+			// function makeElementObject(type, width, height) {
+			// 	const obj = new THREE.Object3D;
+
+			// 	const element = document.createElement( type );
+			// 	element.style.width = width+'px';
+			// 	element.style.height = height+'px';
+			// 	element.style.opacity = 1;
+
+			// 	console.log(element);
+
+			// 	var css3dObject = new CSS3DObject( element );
+			// 	obj.css3dObject = css3dObject
+			// 	obj.add(css3dObject)
+			// 	scene2.add( css3dObject );
+
+			// 	// make an invisible plane for the DOM element to chop
+			// 	// clip a WebGL geometry with it.
+			// 	var material = new THREE.MeshPhongMaterial({
+			// 		opacity	: 0,
+			// 		color	: new THREE.Color( 0x02A0FE ),
+			// 		blending: THREE.NoBlending
+			// 	});
+
+			// 	var geometry = new THREE.BoxGeometry( width, height, 1 );
+			// 	var mesh = new THREE.Mesh( geometry, material );
+			// 	mesh.castShadow = true;
+			// 	mesh.receiveShadow = true;
+			// 	obj.lightShadowMesh = mesh
+			// 	obj.add( mesh );
+
+			// 	return obj
+			// }
+
+			function onDocumentMouseWheel( event ) {
+
+				const fov = camera.fov + event.deltaY * 0.05;
+
+				camera.fov = THREE.MathUtils.clamp( fov, 10, 75 );
+
+				camera.updateProjectionMatrix();
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function loadHtmlButton() {
+
+				const vector = new THREE.Vector3(250, 250, 250);
+				const canvas = renderer.domElement; // `renderer` is a THREE.WebGLRenderer
+
+				vector.project(camera); // `camera` is a THREE.PerspectiveCamera
+
+				vector.x = Math.round((1 + vector.x / 2) * (window.innerWidth / window.devicePixelRatio));
+				vector.y = Math.round((1 - vector.y / 2) * (window.innerHeight / window.devicePixelRatio));
+
+				// console.log(vector.x);
+
+				const annotation = document.querySelector('#annotation-1');
+				annotation.style.top = `${vector.y}px`;
+				annotation.style.left = `${vector.x}px`;
+				annotation.hidden = false;
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				if ( controls ) {
+
+					controls.update(); // required when damping is enabled
+
+				}
+
+				// lat = Math.max( - 85, Math.min( 85, lat ) );
+				// phi = THREE.MathUtils.degToRad( 90 - lat );
+				// theta = THREE.MathUtils.degToRad( lon );
+
+				// const x = 500 * Math.sin( phi ) * Math.cos( theta );
+				// const y = 500 * Math.cos( phi );
+				// const z = 500 * Math.sin( phi ) * Math.sin( theta );
+
+				// camera.lookAt( x, y, z );
+
+				renderer.render( scene, camera );
+
+				loadHtmlButton();
+
+			}
+
+		</script>
+	</body>
+</html>
