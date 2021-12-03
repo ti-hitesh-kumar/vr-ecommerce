@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <title>Panolens.js panorama infospot</title>
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      a:link, a:visited{
+        color: #bdc3c7;
+      }
+
+      #desc-container {
+        max-width: 500px;
+        max-height: 500px;
+        min-width: 200px;
+        min-height: 250px;
+        background: #fff;
+        color: #000;
+        border-radius: 3px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      #desc-container > iframe {
+        border: none;
+        width:100%;
+      }
+
+      .title {
+        font-size: 1.5em;
+        text-align: center;
+        padding: 5px;
+      }
+
+      .text {
+        padding: 0 20px 20px 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <script src="./asset/js/panolens/three.min.js"></script>
+    <script src="./asset/js/panolens/panolens.min.js"></script>
+
+    <script>
+
+      var infospot, infospot2, panorama, viewer;
+
+      infospot = new PANOLENS.Infospot(500, './asset/images/browser.png', true);
+      infospot.position.set( 5000.00, -665.23, -3996.49 );
+      infospot.addHoverText( 'Open Web Page' );
+
+      infospot.addEventListener( 'click', function() {
+
+      	window.open("https://stackoverflow.com/questions/4907843/open-a-url-in-a-new-tab-and-not-a-new-window", '_blank').focus();
+
+      } );
+
+      // Get Google Map API Key - https://developers.google.com/maps/documentation/javascript/get-api-key
+      panorama = new PANOLENS.ImagePanorama( './asset/images/final_hdri.png' );
+      panorama.add( infospot );
+
+      viewer = new PANOLENS.Viewer();
+      viewer.add( panorama );
+
+    </script>
+
+  </body>
+</html>
