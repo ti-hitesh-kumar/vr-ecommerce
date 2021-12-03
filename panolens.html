@@ -56,22 +56,36 @@
 
       var infospot, infospot2, panorama, viewer;
 
-      infospot = new PANOLENS.Infospot(500, './asset/images/browser.png', true);
-      infospot.position.set( 5000.00, -665.23, -3996.49 );
-      infospot.addHoverText( 'Open Web Page' );
+      infospot = new PANOLENS.Infospot(300, './asset/images/www.png', true);
+      infospot.position.set( 6000.00, 665.23, -3996.49 );
+      infospot.addHoverText( 'Facebook' );
+
+      infospot2 = new PANOLENS.Infospot(300, './asset/images/www1.png', true);
+      infospot2.position.set( 4000.00, -765.23, -3996.49 );
+      infospot2.addHoverText( 'Google' );
 
       infospot.addEventListener( 'click', function() {
 
-      	window.open("https://stackoverflow.com/questions/4907843/open-a-url-in-a-new-tab-and-not-a-new-window", '_blank').focus();
+      	window.open("https://www.facebook.com/", '_blank').focus();
+
+      } );
+
+      infospot2.addEventListener( 'click', function() {
+
+        window.open("https://www.google.com/", '_blank').focus();
 
       } );
 
       // Get Google Map API Key - https://developers.google.com/maps/documentation/javascript/get-api-key
-      panorama = new PANOLENS.ImagePanorama( './asset/images/final_hdri.png' );
-      panorama.add( infospot );
+      panorama = new PANOLENS.ImagePanorama( './asset/images/final_hdri-min.png' );
+      panorama.add( infospot, infospot2 );
 
-      viewer = new PANOLENS.Viewer();
+      viewer = new PANOLENS.Viewer({
+        autoHideInfospot: false,
+      });
       viewer.add( panorama );
+
+      viewer.getControl().rotateLeft(1.3)
 
     </script>
 
