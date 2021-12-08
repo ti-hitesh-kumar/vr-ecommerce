@@ -134,7 +134,7 @@
 
 				geometry.scale( - 1, 1, 1 );
 
-				const texture = new THREE.TextureLoader().load( 'asset/images/final_hdri.png' );
+				const texture = new THREE.TextureLoader().load( 'asset/images/final_hdri-min.png' );
 				const material = new THREE.MeshBasicMaterial( { map: texture } );
 
 				mainMesh = new THREE.Mesh( geometry, material );
@@ -245,17 +245,17 @@
 
 			function loadHtmlButton() {
 
-				const vector = new THREE.Vector3(3, 0, 0);
+				const vector = new THREE.Vector3(3, 3, 3);
 				const canvas = renderer.domElement; // `renderer` is a THREE.WebGLRenderer
 
 				vector.project(camera); // `camera` is a THREE.PerspectiveCamera
 
 				vector.x = Math.round((0.5 + vector.x / 5) * (canvas.width / window.devicePixelRatio));
 				vector.y = Math.round((0.5 - vector.y / 5) * (canvas.height / window.devicePixelRatio));
+				vector.z = Math.round((0.5 - vector.y / 5) * (canvas.height / window.devicePixelRatio));
 
 				const annotation = document.querySelector('#annotation-1');
-				annotation.style.transform = `translate3d(${vector.x}px, ${vector.y}px, 0px) scale(1)`;
-				annotation.style.zIndex = (vector.z).toFixed(2);
+				annotation.style.transform = `translate3d(${vector.x}px, ${vector.y}px, ${vector.z}px) scale(1)`;
 				annotation.hidden = false;
 
 			}
