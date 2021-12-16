@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>VR E-Commerce</title>
+
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.0/css/all.css">
+
+		<style type="text/css">
+
+			body {
+				margin: 0;
+				background-image: url("./asset/images/wisconsin-2445257_1920.jpg");
+				background-repeat: no-repeat;
+				background-attachment: fixed;
+				background-size: 100% 100%;
+			}
+
+			/*.home-image {
+				max-height: 100vh;
+				width: auto;
+				margin: 0 auto;
+				display: none;
+			}*/
+
+			/*.enter-room {
+				position: fixed;
+				top: 90%;
+				text-decoration: none;
+				margin: 0 auto;
+			}*/
+
+			/*.enter-room {
+				position:fixed;
+				top: 85%;
+				left: 0;
+				right: 0;
+				text-decoration: none;
+				font-family: sans-serif;
+				max-width: 120px;
+				margin: 0 auto;
+				background: #ffb100;
+				border-bottom: #ffb100 3px solid;
+				border-left: #ffb100 1px solid;
+				border-right: #ffb100 1px solid;
+				border-radius: 6px;
+				text-align: center;
+				color: black;
+				padding: 10px;
+				float: left;
+				font-size: 15px;
+				font-weight: 900;
+			}
+
+			.enter-room:hover {
+			  opacity: 0.8;
+			}
+
+			.enter-room:active {
+				background: #ffb100;
+				border-bottom: #ffb100 1px solid;
+				border-left: #ffb100 1px solid;
+				border-right: #ffb100 1px solid;
+				border-radius: 6px;
+				text-align: center;
+				color: black;
+				padding: 10px;
+				margin-top: 3px;
+				float: left;
+			}
+
+			@media only screen and (max-width: 436px) {
+				.home-image {
+					position: fixed;
+				}
+			}*/
+
+
+		</style>
+
+		<style type="text/css">
+			.circle{
+			  top: 75%;
+			  left: 45%;
+			  display:flex;
+			  position:fixed;
+			  margin: 0 auto;
+			}
+
+			.circle-1, .circle-2, .circle-3, .circle-4{
+			  width:100px;
+			  height:100px;
+			  background:#fff;
+			  border-radius:50%;
+			  color:#fff;
+			  display:flex;
+			  justify-content:center;
+			  align-items:center;
+			  font-size:40px;
+			  cursor: pointer;
+			}
+			.circle-1{
+			  background-image: radial-gradient(circle, #00de91, #03c672, #04af54, #049837, #008116);
+			  transform:rotate(90deg);
+			  position:relative;
+			  animation: animationIconPhone 1s infinite linear;
+			}
+			.circle-2{
+			  background-image: radial-gradient(circle, #f0e955, #d7d244, #beba33, #a6a421, #8e8e0b);
+			  animation: animationIconAll 1s infinite linear;
+			}
+			.circle-3{
+			  background-image: radial-gradient(circle, #ff3636, #de2c28, #be211a, #9f170d, #810b00);
+			  animation: animationIconAll 1s infinite linear;
+			}
+			.circle-4{
+			  background-image: radial-gradient(circle, #8534ee, #7727ca, #681aa8, #580f88, #470569);
+			  animation: animationIconAll 1s infinite linear;
+			}
+			.scale-shadow{
+			  position:absolute;
+			  color:#fff;
+			  width:100px;
+			  height:100px;
+			}
+			.scale-shadow:before{
+			  position:absolute;
+			  content:'';
+			  width:100%;
+			  height:100%;
+			  border-radius:50%;
+			  z-index:-1;
+			  transform:scale(1.3);
+			 
+			}
+			.scale-shadow:after{
+			  position:absolute;
+			  content:'';
+			  width:100%;
+			  height:100%;
+			  border-radius:50%;
+			  z-index:-1;
+			  transform:scale(1.5);
+			}
+
+			#shadow-1:before{
+			   background:radial-gradient(circle, rgba(152, 251, 152, .3), rgba(152, 251, 152, .1) );
+			   animation:animationShadow1 3s infinite linear;
+			}
+			#shadow-2:before{
+			   background:radial-gradient(circle, rgba(255, 193, 37,.3), rgba(255, 193, 37,.1));
+			  animation:animationShadow1 3s infinite linear;
+			}
+			#shadow-3:before{
+			   background:radial-gradient(circle, rgba(255, 48, 48,.3), rgba(255, 48, 48,.1));
+			  animation:animationShadow1 3s infinite linear;
+			}
+			#shadow-4:before{
+			   background:radial-gradient(circle, rgba(148, 0, 211,.3), rgba(148, 0, 211, .1));
+			  animation:animationShadow1 3s infinite linear;
+			}
+
+			#shadow-1:after{
+			  border:.5px solid #00de91;
+			  animation: animationShadow2 1.5s infinite;
+			}
+			#shadow-2:after{
+			 border:.5px solid #f0e955;
+			  animation: animationShadow2 1.5s infinite;
+			}
+			#shadow-3:after{
+			  border:.5px solid #ff3636;
+			  animation: animationShadow2 1.5s infinite;
+			}
+			#shadow-4:after{
+			   border:.5px solid #8534ee;
+			  animation: animationShadow2 1.5s infinite;
+			}
+
+			@keyframes animationIconPhone{
+			  0%{transform: rotate(100deg);}
+			  10%{transform: rotate(70deg);}
+			  20%{transform: rotate(100deg);}
+			  30%{transform: rotate(70deg);}
+			  40%{transform: rotate(100deg);}
+			  50%{transform: rotate(70deg);}
+			  60%{transform: rotate(100deg);}
+			  100%{transform: rotate(100deg);}
+			}
+			@keyframes animationIconAll{
+			  0%{transform: rotate(0deg);}
+			  10%{transform: rotate(15deg);}
+			  20%{transform: rotate(-15deg);}
+			  30%{transform: rotate(15deg);}
+			  40%{transform: rotate(-15deg);}
+			  50%{transform: rotate(15deg);}
+			  60%{transform: rotate(-15deg);}
+			  100%{transform: rotate(0deg);}
+			}
+
+			@keyframes animationShadow1{
+			  0%{
+			    opacity:0;
+			    transform:scale(1.2);
+			  }
+			  25%{
+			    opacity:1;
+			    transform:scale(1.5);
+			  }
+			  50%{
+			    opacity:1;
+			    transform:scale(1.2);
+			  }
+			  75%{
+			    opacity:1;
+			    transform:scale(1.5);
+			  }
+			  100%{
+			    opacity:0;
+			    transform:scale(1.2);
+			  }
+			}
+			@keyframes animationShadow2{
+			  0%{
+			    opacity:0;
+			    transform:scale(1.3);
+			  }
+			  25%{
+			    opacity:1;
+			    transform:scale(1.7);
+			  }
+			  50%{
+			    opacity:1;
+			    transform:scale(1.7);
+			  }
+			  100%{
+			    opacity:0;
+			    transform:scale(2);
+			  }
+			}
+		</style>
+
+	</head>
+
+	<body>
+
+		<div style="width:100%!important, height: 100vh!important;">
+
+			<!-- <img class="home-image" src="./asset/images/theme-park.png"> -->
+
+			<a href="panolens-video.html" class="enter-room">
+				<!-- <span>Enter The Room</span> -->
+				<div class=circle>
+				  <div class="circle-1">
+				  	<i class="fas fa-hand-point-up fa-rotate-270"></i>
+				  </div>
+				  <div class="scale-shadow" id="shadow-1"></div>
+				</div>
+			</a>
+
+		</div>
+
+	</body>
+
+</html>
