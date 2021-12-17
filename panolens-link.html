@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+		<title>Panolens.js  infospot</title>
+		<style>
+			html, body {
+				margin: 0;
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+				background-color: #000;
+			}
+
+			a:link, a:visited{
+				color: #bdc3c7;
+			}
+
+			#desc-container {
+				max-width: 500px;
+				max-height: 500px;
+				min-width: 200px;
+				min-height: 250px;
+				background: #fff;
+				color: #000;
+				border-radius: 3px;
+				overflow: auto;
+				-webkit-overflow-scrolling: touch;
+			}
+
+			#desc-container > iframe {
+				border: none;
+				width:100%;
+			}
+
+			.title {
+				font-size: 1.5em;
+				text-align: center;
+				padding: 5px;
+			}
+
+			.text {
+				padding: 0 20px 20px 20px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<script src="./asset/js/panolens/three.min.js"></script>
+		<script src="./asset/js/panolens/panolens.min.js"></script>
+		<script src="./asset/js/panolens/GLTFLoader.js"></script>
+
+		<script>
+
+			var infospot, infospot2, panorama1, panorama2, panorama3, viewer;
+
+			infospot = new PANOLENS.Infospot(100, './asset/images/record-button.png', false);
+			infospot.position.set( -4200, -1900, -4300 );
+			infospot.addHoverText( 'Facebook' );
+
+			infospot2 = new PANOLENS.Infospot(100, './asset/images/record-button.png', false);
+			infospot2.position.set( -5000, -2200, -2000 );
+			infospot2.addHoverText( 'Google' );
+
+			infospot.addEventListener( 'click', function() {
+
+				window.open("https://www.facebook.com/", '_blank').focus();
+
+			} );
+
+			infospot2.addEventListener( 'click', function() {
+
+				window.open("https://www.google.com/", '_blank').focus();
+
+			} );
+
+			// Get Google Map API Key - https://developers.google.com/maps/documentation/javascript/get-api-key
+			panorama1 = new PANOLENS.ImagePanorama( './asset/images/Render_360_03.jpg' );
+			panorama1.add( infospot, infospot2 );
+
+			panorama2 = new PANOLENS.ImagePanorama( './asset/images/first-view.jpg' );
+			panorama3 = new PANOLENS.ImagePanorama( './asset/images/second-view.jpg' );
+
+			viewer = new PANOLENS.Viewer({
+				autoHideInfospot: false,
+			});
+			viewer.add( panorama1 );
+			viewer.add( panorama2 );
+			viewer.add( panorama3 );
+
+			viewer.getControl().rotateLeft(-1);
+
+			panorama1.link( panorama2, new THREE.Vector3( -3429.01, 1205.85, -3421.88 ) );
+			panorama2.link( panorama3, new THREE.Vector3( -3429.01, 1205.85, -3421.88 ) );
+			panorama3.link( panorama1, new THREE.Vector3( -3429.01, 1205.85, -3421.88 ) );
+
+			let scene, camera, renderer, clock, mixer, mixerM;
+
+			scene = viewer.getScene();
+			camera = viewer.getCamera();
+			renderer = viewer.getRenderer();
+
+			clock = new THREE.Clock();
+
+			const animationGroup = new THREE.AnimationObjectGroup();
+
+			// SCALE
+			const scaleKF = new THREE.VectorKeyframeTrack( '.scale', [ 0, 1, 2 ], [ 200, 200, 200, 300, 300, 300, 200, 200, 200 ] );
+
+			// create an animation sequence with the tracks
+			// If a negative time value is passed, the duration will be calculated from the times of the passed tracks array
+			const clip = new THREE.AnimationClip( 'Action', 1, [ scaleKF ] );
+
+			animationGroup.add( infospot );
+			animationGroup.add( infospot2 );
+
+			// setup the THREE.AnimationMixer
+			mixer = new THREE.AnimationMixer( animationGroup );
+
+			// create a ClipAction and set it to play
+			const clipAction = mixer.clipAction( clip );
+			clipAction.play();
+
+			animate();
+
+			// loaderVideo("./asset/video/futuristic_1.mp4", [40, 7, 0], [20, 20, 20], [0, 1.57, 0]);
+			// loaderVideo("./asset/video/futuristic_2.mp4", [-40, 7, 0], [30, 20, 20], [0, 1.57, 0]);
+			// loaderVideo("./asset/video/futuristic_3.mp4", [10, 7, 40], [50, 20, 20], [0, 0, 0]);
+			// loaderVideo("./asset/video/futuristic_3.mp4", [20, 10, -60], [70, 35, 35], [0, 0, 0]);
+
+			loaderGLTF("./asset/models/Astronaut.glb", [-50, -20, -25], [10, 10, 10], [0, 20, 0]);
+
+			const light = new THREE.DirectionalLight( 0xffffff, 1 );
+			light.position.set( 1, 1, 1 );
+			scene.children[0].add( light );
+
+			const ambientLight = new THREE.AmbientLight( 0xffffff ); // soft white light
+			scene.add( ambientLight );
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				const delta = clock.getDelta();
+
+				if ( mixer ) {
+
+					mixer.update( delta );
+
+				}
+
+				if ( mixerM ) {
+
+					mixerM.update( delta );
+
+				}
+
+				render();
+
+			}
+
+			function render() {
+
+				renderer.render( scene, camera );
+
+			}
+
+			function loaderVideo(videoUrl, position = [0, 3, 20], scale = [20, 20, 20], rotation = [20, 20, 20]) {
+				var video = document.createElement( 'video' );
+				video.playsinline = true;
+				video.setAttribute('webkit-playsinline', 'webkit-playsinline');
+				video.muted = true;
+				video.loop = true;
+				video.autoplay = true;
+				video.crossOrigin = "anonymous";
+				video.src = videoUrl;
+				video.load();
+				video.play();
+
+				const texture = new THREE.VideoTexture( video );
+
+				video.addEventListener( "loadedmetadata", function (evt) {
+					// var videoAspectRatio = texture.image.videoHeight / texture.image.videoWidth;
+					var videoAspectRatio = evt.target.videoHeight / evt.target.videoWidth;
+
+					const geometry = new THREE.PlaneGeometry( 1, videoAspectRatio * 1 );
+					const material = new THREE.MeshBasicMaterial( {
+						map: texture,
+						side: THREE.DoubleSide,
+						toneMapped: false,
+					} );
+
+					const mesh = new THREE.Mesh( geometry, material );
+
+					mesh.position.set(position[0], position[1], position[2]);
+					mesh.scale.set(scale[0], scale[1], scale[2]);
+					mesh.rotation.set(rotation[0], rotation[1], rotation[2]);
+
+					scene.children[0].add( mesh );
+
+				}, false );
+
+			}
+
+			function loaderGLTF(url, position = [0, 3, 20], scale = [20, 20, 20], rotation = [0, 0, 0]) {
+
+				const positionKFM = new THREE.VectorKeyframeTrack( '.position', [ 0, 1, 2 ], [ -50, -20, -25, -50, -16, -25, -50, -20, -25 ] );
+
+				const clipM = new THREE.AnimationClip( 'Action', 2, [ positionKFM ] );
+
+
+				// const ktx2Loader = new KTX2Loader()
+				// 	.setTranscoderPath( 'js/libs/basis/' )
+				// 	.detectSupport( renderer );
+
+				const loader = new THREE.GLTFLoader();
+				// loader.setKTX2Loader( ktx2Loader );
+				// loader.setMeshoptDecoder( MeshoptDecoder );
+				loader.load( url, function ( gltf ) {
+
+					// coffeemat.glb was produced from the source scene using gltfpack:
+					// gltfpack -i coffeemat/scene.gltf -o coffeemat.glb -cc -tc
+					// The resulting model uses EXT_meshopt_compression (for geometry) and KHR_texture_basisu (for texture compression using ETC1S/BasisLZ)
+
+					var gltfScene = gltf.scene;
+
+					gltfScene.position.set(position[0], position[1], position[2]);
+					gltfScene.scale.set(scale[0], scale[1], scale[2]);
+					gltfScene.rotation.set(rotation[0], rotation[1], rotation[2]);
+
+					scene.children[0].add( gltfScene );
+
+					// setup the THREE.AnimationMixer
+					mixerM = new THREE.AnimationMixer( gltfScene );
+
+					// create a ClipAction and set it to play
+					const clipActionM = mixerM.clipAction( clipM );
+					clipActionM.play();
+
+				} );
+
+			}
+
+		</script>
+
+	</body>
+</html>
